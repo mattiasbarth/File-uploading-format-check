@@ -18,7 +18,7 @@ def media_type():
 
     return ', '.join(image_template)
 
-media_type = media_type()
+#media_type = media_type()
 
 app = FastAPI()
 
@@ -40,7 +40,6 @@ def fire():
 @app.post("/fire")
 def upload_fire(images: List[UploadFile] = File(...)):
     for image in images:
-        print(dir(image))
-        print(image.content_type)
-        print(image.file)
+        # TODO solve for content type
+        # print(image.content_type)
         print(image.filename)
