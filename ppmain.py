@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
 import pandas as pd
+import magic
 from PIL import Image
 from typing import List
 
@@ -41,5 +42,11 @@ def fire():
 def upload_fire(images: List[UploadFile] = File(...)):
     for image in images:
         # TODO solve for content type
+        image = image.read()
+        mime = magic.Magic(mime=True)
+        # print(image)
+        print(mime.from_file(image))
+
+
         # print(image.content_type)
-        print(image.filename)
+        # print(image)
