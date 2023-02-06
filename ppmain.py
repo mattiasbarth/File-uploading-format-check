@@ -1,9 +1,10 @@
 import os
 
-from fastapi import FastAPI, File
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
 import pandas as pd
 from PIL import Image
+from typing import List
 
 
 path = "C:/Users/tilda/lisa/realpython/fastapi-web-apis"
@@ -35,3 +36,11 @@ def index():
 def fire():
     img = Image.open('files-for-testing/fire-0.jpg')
     return {"format": img.format, "image": img}
+
+@app.post("/fire")
+def upload_fire(images: List[UploadFile] = File(...)):
+    for image in images:
+        print(dir(image))
+        print(image.content_type)
+        print(image.file)
+        print(image.filename)
