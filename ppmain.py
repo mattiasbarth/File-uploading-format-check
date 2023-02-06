@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
 import pandas as pd
-import magic
+#import magic
 from PIL import Image
 from typing import List
 
@@ -21,12 +21,11 @@ def media_type():
 
 #media_type = media_type()
 
+MAGIC_NUMBERS = {"png": bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+                 "jpg": bytes([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01])}
+MAX_READ_SIZE = max(len(key) for key in MAGIC_NUMBERS.values())
+
 app = FastAPI()
-
-
-# media_type = "image/png, image/jpeg"
-
-# print(type(media_type))
 
 
 @app.get("/")
@@ -41,12 +40,14 @@ def fire():
 @app.post("/fire")
 def upload_fire(images: List[UploadFile] = File(...)):
     for image in images:
-        # TODO solve for content type
-        image = image.read()
-        mime = magic.Magic(mime=True)
-        # print(image)
-        print(mime.from_file(image))
+        image = image.file.read(MAX_READ_SIZE)
+
+        print(type(image))
 
 
-        # print(image.content_type)
-        # print(image)
+        if any([image.startswith(magic) for magic in MAGIC_NUMBERS.values()]):
+            print("HURRAY!")
+            # TODO compare image.file and magic_number key
+        else:
+            print("No")
+
