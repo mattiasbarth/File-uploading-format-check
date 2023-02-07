@@ -1,25 +1,37 @@
-from fastapi import FastAPI, Path, Request, UploadFile, File
-from typing import Optional
+import os
 
+from fastapi import FastAPI, File
+from fastapi.responses import FileResponse
+import pandas as pd
+from PIL import Image
+
+
+path = "C:/Users/tilda/lisa/realpython/fastapi-web-apis"
+
+def media_type():
+    file_path = os.path.join(path, 'files/image.csv')
+
+    df = pd.read_csv(file_path)
+
+    image_template = df["Template"].dropna()
+
+    return ', '.join(image_template)
+
+media_type = media_type()
 
 app = FastAPI()
 
 
-inventory = {
-    1: {
-        "name": "Milk",
-        "price": 3.99,
-        "brand": "Regular"
-    }
-}
+# media_type = "image/png, image/jpeg"
 
-@app.get("/get-item/{item_id}")
-def get_item(item_id: int = Path(None, description="The ID of the item you'd like yo view", gt=0, lt=5)):
-    return inventory[item_id]
+# print(type(media_type))
 
-@app.get("/get-by-name")
-def get_item(*, name: Optional[str] = None, test: int):
-     for item_id in inventory:
-        if inventory[item_id]["name"] == name:
-            return inventory[item_id]
-        return {"Data": "Not found"}
+
+@app.get("/")
+def index():
+    return {"media_type": media_type}
+
+@app.get("/fire")
+def fire():
+    img = Image.open('files-for-testing/fire-0.jpg')
+    return {"format": img.format, "image": img}
